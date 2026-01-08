@@ -42,7 +42,7 @@
     <header class="w-full px-6 py-4 flex items-center justify-between glass-panel border-b-0 z-20 flex-shrink-0">
         <div class="flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg"><i data-lucide="package" class="w-5 h-5"></i></div>
-            <div><h1 class="font-bold text-lg leading-tight text-slate-800">Globle OneClick <span class="text-xs font-normal text-slate-500 bg-white/50 px-1.5 py-0.5 rounded ml-1">made by Kari [价格生效时间：2026-01-06]</span></h1></div>
+            <div><h1 class="font-bold text-lg leading-tight text-slate-800">Global OneClick <span class="text-xs font-normal text-slate-500 bg-white/50 px-1.5 py-0.5 rounded ml-1">made by Kari [价格生效时间：2026-01-06]</span></h1></div>
         </div>
     </header>
 
@@ -110,14 +110,37 @@
                 </div>
             </div>
             <div class="glass-panel rounded-xl flex-shrink-0 overflow-hidden">
-                <button onclick="toggleNotice()" class="w-full flex items-center justify-between p-4 hover:bg-white/50 transition-colors text-left"><div class="flex items-center gap-2"><i data-lucide="info" class="w-4 h-4 text-blue-500"></i><span class="text-xs font-bold text-slate-700">派送范围与特殊说明</span></div><i id="chevron" data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform duration-300"></i></button>
-                <div id="notice-content" class="hidden border-t border-slate-100 bg-slate-50/30"><div class="p-5 max-h-[160px] overflow-y-auto custom-scroll text-xs text-slate-600 leading-relaxed whitespace-pre-wrap font-medium">1. 英国：全境通邮(即英国本土及其境内的附属岛屿通邮)，英国的海外领地和离岸岛屿不通邮。
+                <button onclick="toggleNotice()" class="w-full flex items-center justify-between p-4 hover:bg-white/50 transition-colors text-left"><div class="flex items-center gap-2"><i data-lucide="info" class="w-4 h-4 text-blue-500"></i><span class="text-xs font-bold text-slate-700">派送范围与申报说明</span></div><i id="chevron" data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform duration-300"></i></button>
+                <div id="notice-content" class="hidden border-t border-slate-100 bg-slate-50/30"><div class="p-5 max-h-[160px] overflow-y-auto custom-scroll text-xs text-slate-600 leading-relaxed whitespace-pre-wrap font-medium">
+派送范围：
+1. 英国：全境通邮(即英国本土及其境内的附属岛屿通邮)，英国的海外领地和离岸岛屿不通邮。
 2. 美国：全美通邮，不包括阿拉斯加、夏威夷等偏远地区，波多黎各、关岛等境外地址；不接受DPO/APO/FPO军事地址。
 3. 日本：不能派送APO/FPO军事地址，不能派送亚马逊地址。
-4. 新加坡：部分地区不可达，详细参考不可到地区清单邮编明细。
+4. 新加坡: 特惠渠道部分地区不可达，<a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSTXbvopBCVhU8QbI4ABlzkCyVV23xXSh3dzT6QdPPFz4eBiQUzcjMp-Yq4ZOUcOCFoMGqUevXUXfOd/pubhtml" target="_blank" class="text-blue-400 hover:underline">详细参考不可到地区清单邮编明细</a>。
 5. 中东地区：阿拉伯联合酋长国、沙特阿拉伯、约旦、黎巴嫩、科威特、巴林、卡塔尔：均不接受POBOX地址。
 6. 韩国：韩国全境，部分偏远限制，不接受PO BOX和军事地址。
-7. 其他：各国附属岛屿均不提供派送服务。</div></div>
+7. 其他：各国附属岛屿均不提供派送服务。
+                    
+申报提示：
+1. 英国：不接受申报价值大于和等于135GBP/155USD/150EUR的包裹；自2021年1月1日起，因税改之后由平台代缴或客户自主申报缴税，会按照客户实际销售金额缴税，云途不再承担代缴的义务，不再会提前收取客户的VAT，请客户按实际成交价格如实申报；
+2. 美国：单票包裹的申报价值不得超过（含）60美金；
+德国、法国、意大利、西班牙、波兰、比利时、奥地利、瑞典、丹麦：不接受等于和大于150欧元或155美金的包裹
+3. 加拿大关税与申报说明：我司默认为DDP的清关方式，不接受申报价值超99美元的包裹，加拿大免税额为20CAD，申报超过20CAD，我司将按照申报价值*18%收取税费。另需注意：
+①申报超过20CAD的包裹，必须在填申报品名时注明材质，如塑料玩具：plastic toys；收件人姓名必须为全名，不能为缩写或仅有姓或名，（例如收件人姓名必须为："Josh Cullen"，不能仅填写"Josh C"），否则数据到了邮局无法计算关税，将导致包裹转运延误
+②同一个收件人发2个及以上包裹且品名相同，不论申报金额多少都会被海关认定是商业包裹，此情况大概率会被海关查验，同时将无法享受B2C个人清关政策，需要转商业清关。每次商业清关费用1000~5000CAD不等（如果产生，将实报实销、向发件人收取）。如果1个收件人有多个包裹建议最少分开3天发货防止同时抵达海关处导致产生额外费用。
+③目的地海关收取关税统一会换算成加币加收，建议客户下单申报币种选择CAD，如因美元对加元汇率变动较大导致产生关税，我司有权进行补收。
+4. 澳大利亚：货件品名和申报价值需如实申报，不接受模糊品名申报；不接受申报价值超过600美金，且不接受同一个收件人名且同一地址，当天累计包裹申报价值超过600美金（瞒报被查客户承担税金和增值税）。
+5. 日本：①不接受申报价值超过70USD（10000日元）的产品,发往日本单个包裹产品数量不能超过10个，否则可能会被海关判断为商业件导致清关异常（瞒报被查客户承担税金）包裹到达目的地内7天未放行的包裹将开始计算仓租，如因查验产生仓租，云途保留对发件人收取仓储费权利，实报实销且不一定都能提供凭证。				
+6. 挪威：挪威海关政策，2024年1月1日起，将通过在挪威当地注册的VOEC号申报税费；我司从2023年12月14日起，本产品不接受下单无VOEC号的包裹；不接受申报价值等于或超过3000NOK（约250欧元/265美元）的包裹；如因客户提供的VOEC信息有误，造成清关环节异常或由此产生相关额外费用由客户无条件承担；
+7. 瑞士：自2024年1月1日起,瑞士海关将调整计税货值和增值税(VAT)税率,每日发给同一收件人包裹的合计申报价值不能大于等于62瑞士法郎，如累计申报大于等于62瑞士法郎，则会找客户补收相关的增值税和关税，增值税按申报价值的8.1%收取，关税以实际目的地海关产生为准
+8. 墨西哥：下单时收件人税号必填，货件品名和申报价值需如实申报；申报品名不能为大类申报，必须为具体品名；不接受申报价值大于等于300美金的包裹。
+9. 新加坡：不接受申报价值超过290USD的包裹；申报价值超过290USD或海关认定申报价值超过290USD的包裹，会产生9%消费税+许可证费用，该部分费用需由客户自行承担。
+如果同一个收件人同一天发货有多个包裹，且多个包裹的申报价值金额相加超出290USD，也会产生9%消费税+许可证费用；同一个收件人多个包裹建议最少分开3天发。
+其中，客户申报价值低于290USD但符合以下条件之一的客户仍需缴纳消费税：
+①上一年（如：2023年1月1日至12月31日）全球营业额超过100万新元或新加坡本地销售额超过10万新元;
+②预计在未来12个月内，全球营业额超过100万新元或新加坡当地销售额会超过10万新元的客户需按照实际销售金额申报缴税；可由平台代缴或客户自主申报，云途不承担代缴义务，不会提前收取客户的VAT，请客户按实际成交价格如实申报
+10. 新西兰：货件品名和申报价值需如实申报，不接受模糊品名申报；不接受申报价值超过550美金的包裹；如因低报、瞒报等造成额外清关费用和关税产生，由客户承担。
+</div></div>
             </div>
         </main>
     </div>
