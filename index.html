@@ -7,6 +7,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <script>
@@ -142,130 +143,75 @@
 
 <script>
     // ==========================================
-    // 1. 澳洲邮编分区数据库 (精确匹配)
+    // 0. Supabase 初始化
     // ==========================================
-    
-    // 邮编数据库：使用 Map 结构存储，key 为邮编字符串，value 为分区对象 {BK: "1区", TH: "1区", TD: "1区"}
-    // BK = 标快, TH = 特惠, TD = 精选（精选使用特惠的分区规则）
+    const SUPABASE_URL = "https://zbaocurfbhilxmzuaknt.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYW9jdXJmYmhpbHhtenVha250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0ODI0ODUsImV4cCI6MjA4NTA1ODQ4NX0.lvrtAj0LvLX3S7oDtkIcWL23dCISG6SVA1LkNkY8CQ8";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // ==========================================
+    // 1. 数据库 (从 Supabase 加载)
+    // ==========================================
     const AU_ZIPCODE_DB = new Map();
-    
-    // 辅助函数：将邮编范围添加到数据库（合并数据，不覆盖）
-    function addZipRange(start, end, bkZone, thZone) {
-        for (let zip = start; zip <= end; zip++) {
-            const zipKey = String(zip);
-            const existing = AU_ZIPCODE_DB.get(zipKey) || {};
-            AU_ZIPCODE_DB.set(zipKey, {
-                BK: bkZone || existing.BK || null,
-                TH: thZone || existing.TH || null,
-                TD: thZone || existing.TD || null  // 精选使用特惠的分区规则
+    let RAW_DATA = [];
+
+    async function loadDataFromSupabase() {
+        const resultCountLabel = document.getElementById('result-badge');
+        if (resultCountLabel) resultCountLabel.innerText = "Loading Data...";
+
+        try {
+            // 1. 加载报价数据
+            const { data: pricing, error: pError } = await supabaseClient
+                .from('pricing_data')
+                .select('*');
+            
+            if (pError) throw pError;
+            
+            RAW_DATA = pricing.map(item => ({
+                c: item.country,
+                n: item.name,
+                code: item.code,
+                t: item.time,
+                r: item.rates
+            }));
+
+            // 2. 加载澳洲邮编分区数据
+            const { data: zones, error: zError } = await supabaseClient
+                .from('au_postcode_zones')
+                .select('*');
+            
+            if (zError) throw zError;
+
+            zones.forEach(z => {
+                AU_ZIPCODE_DB.set(z.postcode, {
+                    BK: z.bk_zone,
+                    TH: z.th_zone,
+                    TD: z.td_zone
+                });
             });
+
+            console.log(`✅ 数据加载成功: ${RAW_DATA.length} 条报价, ${AU_ZIPCODE_DB.size} 条邮编记录`);
+            initCountry();
+            if (resultCountLabel) resultCountLabel.innerText = "Ready";
+        } catch (err) {
+            console.error("❌ 数据加载失败:", err);
+            if (resultCountLabel) resultCountLabel.innerText = "Load Failed";
         }
     }
-    
-    // 初始化邮编数据库 (基于Excel精确数据 - 共9091条邮编)
-    function initAuZipcodeDB() {
-        // 数据来源: 澳大利亚邮编分区.xlsx
-        // BK = 标快, TH = 特惠, TD = 精选
-    AU_ZIPCODE_DB.set("1000", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1001", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1002", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1003", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1004", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1005", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1006", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1007", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1008", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1009", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1010", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1011", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1012", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1013", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1014", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1015", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1016", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1017", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1018", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1019", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1020", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1021", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1022", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1023", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1024", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1025", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1026", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1027", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1028", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1029", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1030", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1031", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1032", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1033", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1034", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1035", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1036", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1037", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1038", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1039", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1040", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1041", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1042", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1043", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1044", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1045", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1046", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1047", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1048", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1049", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1050", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1051", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1052", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1053", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1054", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1055", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1056", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1057", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1058", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1059", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1060", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1061", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1062", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1063", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1064", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1065", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1066", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1067", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1068", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1069", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1070", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1071", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1072", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1073", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1074", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1075", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1076", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1077", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1078", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1079", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1080", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1081", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1082", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1083", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1084", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1085", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1086", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1087", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1088", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1089", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1090", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1091", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1092", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1093", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1094", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1095", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1096", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1097", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1098", {BK: "1区", TH: "1区", TD: "1区"});
-    AU_ZIPCODE_DB.set("1099", {BK: "1区", TH: "1区", TD: "1区"});
+
+    function getAuZone(zipStr, type) {
+        if (!zipStr) return null;
+        const zip = String(zipStr).trim();
+        const zoneData = AU_ZIPCODE_DB.get(zip);
+        if (!zoneData) return type === 'BK' ? "3区" : "4区";
+        if (type === 'BK') return zoneData.BK || "3区";
+        return zoneData.TH || zoneData.TD || "4区";
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        loadDataFromSupabase();
+    });
         // ... 完整数据太长,采用压缩JSON格式加载
         
         // 使用压缩JSON数据初始化

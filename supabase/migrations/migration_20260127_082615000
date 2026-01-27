@@ -1,0 +1,32 @@
+-- 创建报价表
+create table pricing_data (
+    id uuid primary key default gen_random_uuid(),
+    country text not null,
+    name text not null,
+    code text not null,
+    time text,
+    rates jsonb not null, -- 存储价格梯度数组 [{m: 0.3, p: 41, r: 39}, ...]
+    created_at timestamptz default now(),
+    updated_at timestamptz default now()
+);
+
+-- 创建澳洲分区表
+create table au_postcode_zones (
+    postcode text primary key,
+    bk_zone text,
+    th_zone text,
+    td_zone text,
+    created_at timestamptz default now()
+);
+
+-- 开启 RLS
+alter table pricing_data enable row level security;
+alter table au_postcode_zones enable row level security;
+
+-- 允许所有人读取数据
+create policy "Allow public read access on pricing_data" on pricing_data for select using (true);
+create policy "Allow public read access on au_postcode_zones" on au_postcode_zones for select using (true);
+
+-- 开启实时更新支持
+alter publication supabase_realtime add table pricing_data;
+alter publication supabase_realtime add table au_postcode_zones;

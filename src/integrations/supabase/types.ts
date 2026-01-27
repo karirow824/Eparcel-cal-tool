@@ -14,7 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      au_postcode_zones: {
+        Row: {
+          bk_zone: string | null
+          created_at: string | null
+          postcode: string
+          td_zone: string | null
+          th_zone: string | null
+        }
+        Insert: {
+          bk_zone?: string | null
+          created_at?: string | null
+          postcode: string
+          td_zone?: string | null
+          th_zone?: string | null
+        }
+        Update: {
+          bk_zone?: string | null
+          created_at?: string | null
+          postcode?: string
+          td_zone?: string | null
+          th_zone?: string | null
+        }
+        Relationships: []
+      }
+      pricing_data: {
+        Row: {
+          code: string
+          country: string
+          created_at: string | null
+          id: string
+          name: string
+          rates: Json
+          time: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          code: string
+          country: string
+          created_at?: string | null
+          id?: string
+          name: string
+          rates: Json
+          time?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          code?: string
+          country?: string
+          created_at?: string | null
+          id?: string
+          name?: string
+          rates?: Json
+          time?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
